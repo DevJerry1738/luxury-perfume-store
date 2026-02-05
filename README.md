@@ -46,3 +46,50 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Sprint 6 - UX Polish & Review
+
+This update focuses on elevating the UI to a premium, minimal experience with improved spacing, motion, and responsive layouts.
+
+What's included:
+
+- New `Home` page with `HeroSection`, `ScentFamilySelector`, `BestSellersCarousel`, and an editorial About section.
+- Skeleton loading components: `SkeletonCard.vue` and `SkeletonGrid.vue` with CSS shimmer.
+- Micro-interactions and animations in `src/styles/animations.css`.
+- Responsive adjustments and accessibility improvements.
+
+Folder highlights:
+
+```
+src/
+├─ components/
+│  ├─ HeroSection.vue
+│  ├─ ScentFamilySelector.vue
+│  ├─ BestSellersCarousel.vue
+│  ├─ SkeletonCard.vue
+│  └─ SkeletonGrid.vue
+├─ pages/
+│  └─ Home.vue
+├─ styles/
+│  └─ animations.css
+```
+
+How to run locally:
+
+```sh
+npm install
+npm run dev
+```
+
+Notes for portfolio:
+
+- Visual polish aims for clean editorial spacing, high contrast, and an accent color. Replace `hero.jpg` in `public/` with a high-quality image to get the intended cinematic effect.
+
+```
+Color,Hex Code,Usage
+Primary White,#FFFFFF,"Backgrounds, text on dark elements—creates airy space."
+Soft Gray,#F5F5F5,"Subtle backgrounds, dividers—for depth without overwhelm."
+Deep Charcoal,#333333,"Text, navigation—elegant contrast."
+Gold Accent,#D4AF37,"Buttons, highlights, logo accents—subtle luxury touch."
+"Optional Pastel (e.g., Soft Lavender)",#E6E0F8,For scent category highlights or hover effects—evokes floral notes without boldness.i 
+```

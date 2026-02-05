@@ -1,0 +1,50 @@
+/* Simple utility animations and micro-interactions */
+
+:root {
+  --accent: #d4af37;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    box-shadow 160ms ease;
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(212, 175, 55, 0.2);
+}
+
+.fade-up {
+  transform: translateY(8px);
+  opacity: 0;
+  animation: fadeUp 420ms ease forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Drawer easing */
+.drawer {
+  transition: right 280ms cubic-bezier(0.16, 0.84, 0.33, 1);
+}
+
+/* Heart pulse */
+.heart-pop {
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+.heart-pop.active {
+  transform: scale(1.18);
+}
+
+/* Skeleton shimmer helper is defined in SkeletonCard */

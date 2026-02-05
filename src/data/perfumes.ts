@@ -1,4 +1,6 @@
 import type { Perfume } from '@/types/perfume'
+import noirImage from '@/assets/images/noir-elite.jpg'
+import velourImage from '@/assets/images/velour-rose.jpg'
 
 export const perfumes: Perfume[] = [
   {
@@ -21,7 +23,7 @@ export const perfumes: Perfume[] = [
       { size: 100, price: 90000 },
     ],
 
-    image: '/images/noir-elite.jpg',
+    image: noirImage,
     isBestSeller: true,
     isNewArrival: false,
     inStock: true,
@@ -47,7 +49,32 @@ export const perfumes: Perfume[] = [
       { size: 100, price: 82000 },
     ],
 
-    image: '/images/velour-rose.jpg',
+    image: velourImage,
+    isBestSeller: false,
+    isNewArrival: true,
+    inStock: true,
+  },
+  {
+    id: 'p003',
+    name: 'Velour Rose',
+    brand: 'Atelier Belle',
+    description: 'A luxurious floral scent with a modern, velvety rose accord.',
+
+    scentFamily: 'Oriental',
+    gender: 'Men',
+
+    notes: {
+      top: ['Pink Pepper', 'Lychee'],
+      middle: ['Damask Rose', 'Peony'],
+      base: ['Musk', 'Cashmere Wood'],
+    },
+
+    sizes: [
+      { size: 50, price: 48000 },
+      { size: 100, price: 82000 },
+    ],
+
+    image: velourImage,
     isBestSeller: false,
     isNewArrival: true,
     inStock: true,
