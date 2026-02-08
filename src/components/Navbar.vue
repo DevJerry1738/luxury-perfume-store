@@ -2,7 +2,7 @@
   <nav class="navbar">
     <!-- Brand -->
     <router-link to="/" class="brand">
-      <span class="brand-text">Luxury Perfume</span>
+      <span class="brand-text">Elysian <span class="brand-subtext">Scents</span></span>
     </router-link>
 
     <!-- Actions -->
@@ -58,9 +58,15 @@ const wishlistStore = useWishlistStore()
 }
 
 .brand-text {
-  font-size: 18px;
+  font-size: 20px; /* Slightly larger for a more premium feel */
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.6px; /* Increased spacing for elegance */
+  text-transform: uppercase; /* All caps for modern minimalism */
+  font-family: 'Futura', 'Roboto Condensed', sans-serif; /* Align with recommended typography */
+}
+
+.brand-subtext {
+  font-weight: 400; /* Lighter weight for 'Scents' to create subtle contrast */
 }
 
 .actions {
