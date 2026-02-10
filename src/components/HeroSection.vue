@@ -2,7 +2,7 @@
   <section class="hero-section" aria-label="Elysian Scents Promotions">
     <div class="promo-grid">
       <!-- Main Hero Banner -->
-      <div class="promo-large">
+      <div class="promo-card promo-large promo-valentine">
         <div class="promo-content">
           <span class="promo-label">VALENTINE’S COLLECTION</span>
           <h1 class="promo-headline">
@@ -11,50 +11,24 @@
           </h1>
           <p class="promo-sub">Curated fragrances crafted for unforgettable moments</p>
 
-          <RouterLink
-            to="/products"
-            class="promo-cta"
-            role="button"
-            aria-label="Shop Valentine Collection"
-          >
-            Shop Collection
-          </RouterLink>
+          <RouterLink to="/products" class="promo-cta"> Shop Collection </RouterLink>
         </div>
-
-        <img
-          :src="heroimg"
-          alt="Luxury perfume bottles for Valentine’s collection"
-          class="promo-image"
-          loading="eager"
-        />
       </div>
 
-      <!-- Small Promo: Gift Sets -->
-      <div class="promo-small promo-top">
+      <!-- Top Right: New Arrivals -->
+      <div class="promo-card promo-small promo-new">
         <div class="promo-content">
-          <h2 class="promo-headline-small">Valentine’s Gift Sets</h2>
-          <p class="promo-sub-small">Perfectly paired for love</p>
+          <h2 class="promo-headline-small">New Arrivals</h2>
+          <p class="promo-sub-small">Fresh drops just landed</p>
         </div>
-        <img
-          :src="giftimg"
-          alt="Luxury perfume gift sets"
-          class="promo-image-small"
-          loading="lazy"
-        />
       </div>
 
-      <!-- Small Promo: Best Sellers -->
-      <div class="promo-small promo-bottom">
+      <!-- Bottom Right: Best Sellers -->
+      <div class="promo-card promo-small promo-best">
         <div class="promo-content">
           <h2 class="promo-headline-small">Best Sellers</h2>
-          <p class="promo-sub-small">Customer favorites</p>
+          <p class="promo-sub-small">Loved by our customers</p>
         </div>
-        <img
-          :src="bestsellerimg"
-          alt="Best selling perfumes"
-          class="promo-image-small"
-          loading="lazy"
-        />
       </div>
     </div>
   </section>
@@ -62,183 +36,169 @@
 
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import heroimg from '@/assets/images/hero.webp' // Reuse existing for large banner; update path as needed
-import bestsellerimg from '@/assets/images/bestseller.jpg' // Add your diffuser image asset
-import giftimg from '@/assets/images/gift.webp' // Add your gift set image asset
 </script>
 
 <style scoped>
 .hero-section {
-  background: var(--bg-surface, #fff);
-  padding: 0;
-  margin: 0 auto 48px auto;
   max-width: 1200px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  margin: 0 auto 56px;
+  padding: 0 16px;
 }
 
+/* ===== GRID ===== */
 .promo-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  grid-template-rows: repeat(2, auto);
+  grid-template-rows: repeat(2, 1fr);
   gap: 16px;
-  width: 100%;
-  animation: fadeIn 0.9s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: fadeUp 0.8s ease both;
 }
 
-.promo-large {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  background-color: #d32f2f; /* Red to match image */
-  border-radius: 8px;
+/* ===== BASE CARD ===== */
+.promo-card {
   position: relative;
+  border-radius: 14px;
   overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 32px;
   color: #fff;
-  min-height: 300px; /* Adjust based on image */
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition:
+    transform 0.45s ease,
+    box-shadow 0.45s ease;
 }
 
-.promo-small {
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 24px;
-  color: #fff;
-  height: 140px; /* Approximate to match stacked rights */
-  margin: auto 0px;
+.promo-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.55));
+  transition: background 0.45s ease;
 }
 
-.promo-top {
-  background-color: #8d6e63; /* Brown to match image */
-  grid-column: 2;
-  grid-row: 1;
+.promo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
 }
 
-.promo-bottom {
-  background-color: #1976d2; /* Blue to match image */
-  grid-column: 2;
-  grid-row: 2;
+.promo-card:hover::before {
+  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.7));
 }
 
+.promo-card:hover {
+  background-size: 105%;
+}
+
+/* ===== CONTENT ===== */
 .promo-content {
+  position: relative;
   z-index: 2;
-  max-width: 50%;
+  max-width: 60%;
+  padding: 32px;
 }
 
 .promo-label {
   font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: 1px;
-  margin-bottom: 8px;
+  font-weight: 600;
   opacity: 0.9;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
 .promo-headline {
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  font-weight: 700;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
   line-height: 1.1;
-  margin: 0 0 8px 0;
+  margin-bottom: 12px;
+  font-weight: 700;
 }
 
 .promo-headline-small {
-  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-size: 1.4rem;
   font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 4px 0;
+  margin-bottom: 6px;
 }
 
 .promo-sub {
   font-size: 1rem;
-  opacity: 0.85;
-  margin-bottom: 16px;
+  opacity: 0.9;
+  margin-bottom: 20px;
 }
 
 .promo-sub-small {
   font-size: 0.9rem;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
+/* ===== CTA ===== */
 .promo-cta {
-  background: #fff;
-  color: #d32f2f;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
+  display: inline-block;
+  padding: 10px 28px;
   border-radius: 999px;
-  padding: 10px 24px;
+  background: #fff;
+  color: #111;
+  font-weight: 600;
   text-decoration: none;
-  cursor: pointer;
   transition:
-    background 0.2s,
-    color 0.2s;
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .promo-cta:hover {
-  background: #f5f5f5;
-  color: #b71c1c;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
-.promo-image {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 60%;
-  height: auto;
-  object-fit: contain;
-  z-index: 1;
-  filter: brightness(1.05);
+/* ===== CARD SIZES ===== */
+.promo-large {
+  grid-row: 1 / 3;
+  min-height: 360px;
 }
 
-.promo-image-small {
-  position: absolute;
-  right: 16px;
-  bottom: 16px;
-  width: 40%;
-  height: auto;
-  object-fit: contain;
-  z-index: 1;
+.promo-small {
+  min-height: 170px;
+  display: flex;
+  align-items: flex-end;
 }
 
-@media (max-width: 799px) {
+/* ===== BACKGROUND IMAGES ===== */
+.promo-valentine {
+  background-image: url('@/assets/images/hero.webp');
+}
+
+.promo-new {
+  background-image: url('@/assets/images/gift.webp');
+}
+
+.promo-best {
+  background-image: url('@/assets/images/bestseller.jpg');
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 900px) {
   .promo-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: auto;
   }
+
   .promo-large {
-    grid-row: 1;
-    min-height: 200px;
-    padding: 24px;
+    min-height: 300px;
   }
-  .promo-small {
-    grid-column: 1;
-    height: 120px;
-    padding: 16px;
-  }
+
   .promo-content {
-    max-width: 60%;
-  }
-  .promo-image {
-    width: 50%;
-  }
-  .promo-image-small {
-    width: 35%;
+    max-width: 100%;
+    padding: 24px;
   }
 }
 
-@keyframes fadeIn {
+/* ===== ANIMATION ===== */
+@keyframes fadeUp {
   from {
     opacity: 0;
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

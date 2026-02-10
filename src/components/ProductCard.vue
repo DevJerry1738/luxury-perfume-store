@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import WishlistButton from './WishlistButton.vue'
-import type { Perfume } from '@/types/perfume'
+import type { Perfume } from '../types/perfume'
 
 const props = defineProps<{ perfume: Perfume }>()
 

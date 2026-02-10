@@ -28,8 +28,8 @@
 
 <script setup lang="ts">
 import { Heart, ShoppingCart } from 'lucide-vue-next'
-import { useCartStore } from '@/stores/cartStore'
-import { useWishlistStore } from '@/stores/wishlistStore'
+import { useCartStore } from '../stores/cartStore'
+import { useWishlistStore } from '../stores/wishlistStore'
 
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
@@ -48,7 +48,8 @@ const wishlistStore = useWishlistStore()
 
   padding: 0 24px;
 
-  background: var(--bg-surface);
+  background: white;
+  opacity: 0.95;
   border-bottom: 1px solid var(--border-subtle);
 }
 

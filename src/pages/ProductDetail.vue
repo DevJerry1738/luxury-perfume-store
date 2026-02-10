@@ -89,11 +89,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import SizeSelector from '@/components/SizeSelector.vue'
-import WishlistButton from '@/components/WishlistButton.vue'
-import { perfumes } from '@/data/perfumes'
-import type { PerfumeSize } from '@/types/perfume'
-import { useCartStore } from '@/stores/cartStore'
+import SizeSelector from '../components/SizeSelector.vue'
+import WishlistButton from '../components/WishlistButton.vue'
+import { localProducts } from '../data/products'
+import type { PerfumeSize } from '../types/perfume'
+import { useCartStore } from '../stores/cartStore'
 
 const route = useRoute()
 
@@ -101,7 +101,7 @@ const route = useRoute()
 const productId = computed(() => route.params.id as string)
 
 // Always lookup from the full product source so filters don't affect detail pages
-const product = computed(() => perfumes.find((p) => p.id === productId.value))
+const product = computed(() => localProducts.find((p) => p.id === productId.value))
 
 // Track selected size (controlled via v-model). Default to first size when product loads.
 const selectedSize = ref<PerfumeSize | null>(null)
