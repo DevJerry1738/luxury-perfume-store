@@ -37,3 +37,15 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+ 
+# Secrets and sensitive files
+.env
+.env.*
+secrets/
+*.key
+*.pem
+*.crt
+*.pfx
+*.cert
+*.env.local
+config/secrets.json
