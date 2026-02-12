@@ -1,7 +1,7 @@
 <template>
   <div class="sort-wrapper">
     <label for="sort-select" class="sort-label">Sort by:</label>
-    <select id="sort-select" :value="store.sortBy" @change="updateSort" class="sort-select">
+    <select id="sort-select" :value="sortBy" @change="updateSort" class="sort-select">
       <option v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
         {{ option.label }}
       </option>
@@ -10,20 +10,26 @@
 </template>
 
 <script setup lang="ts">
-import { useProductStore } from '@/stores/productStore'
+// Props
+const props = defineProps<{
+  sortBy: 'price-asc' | 'price-desc' | 'best-seller' | 'new-arrival'
+}>()
 
-const store = useProductStore()
+// Emits
+const emit = defineEmits<{
+  'update:sort-by': [value: 'price-asc' | 'price-desc' | 'best-seller' | 'new-arrival']
+}>()
 
 const SORT_OPTIONS = [
-  { value: 'price-asc', label: 'Price: Low → High' },
-  { value: 'price-desc', label: 'Price: High → Low' },
-  { value: 'best-seller', label: 'Best Sellers' },
-  { value: 'new-arrival', label: 'New Arrivals' },
-] as const
+  { value: 'price-asc' as const, label: 'Price: Low → High' },
+  { value: 'price-desc' as const, label: 'Price: High → Low' },
+  { value: 'best-seller' as const, label: 'Best Sellers' },
+  { value: 'new-arrival' as const, label: 'New Arrivals' },
+]
 
 const updateSort = (e: Event) => {
   const target = e.target as HTMLSelectElement
-  store.setSortBy(target.value as 'price-asc' | 'price-desc' | 'best-seller' | 'new-arrival')
+  emit('update:sort-by', target.value as typeof props.sortBy)
 }
 </script>
 

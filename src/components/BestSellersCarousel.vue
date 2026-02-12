@@ -11,16 +11,16 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import ProductCard from '@/components/ProductCard.vue'
-import { useProductStore } from '@/stores/productStore'
+import ProductCard from '../components/ProductCard.vue'
+import { useProductStore } from '../stores/productStore'
 
 const store = useProductStore()
 
 const items = computed(() => {
   const sellers = store.products.filter((p: any) => p.isBestSeller)
   if (sellers.length > 0) return sellers.slice(0, 6)
-  // fallback: top items from filtered list
-  return store.filteredAndSortedProducts.slice(0, 6)
+  // fallback: show first 6 products from raw data
+  return store.products.slice(0, 6)
 })
 
 const track = ref<HTMLElement | null>(null)

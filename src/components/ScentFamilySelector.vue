@@ -6,8 +6,8 @@
         <button
           v-for="family in families"
           :key="family"
-          :class="['pill', { active: isActive(family) }]"
-          @click="toggle(family)"
+          class="pill"
+          disabled
         >
           {{ family }}
         </button>
@@ -18,19 +18,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductStore } from '@/stores/productStore'
+import { useProductStore } from '../stores/productStore'
 
 const store = useProductStore()
 
 const families = computed(() => store.availableScentFamilies)
-
-function toggle(family: any) {
-  store.toggleScentFamily(family)
-}
-
-function isActive(family: any) {
-  return store.selectedScentFamilies.includes(family as any)
-}
 </script>
 
 <style scoped>
@@ -61,19 +53,10 @@ function isActive(family: any) {
   border: 1px solid #e0e0e0;
   padding: 8px 14px;
   border-radius: 999px;
-  cursor: pointer;
+  cursor: default;
   transition:
     transform 160ms ease,
     background 160ms ease;
-}
-.pill:hover {
-  transform: translateY(-4px);
-}
-.pill.active {
-  background: #d4af37;
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.16);
 }
 
 @media (max-width: 640px) {

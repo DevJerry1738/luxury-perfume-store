@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { localProducts } from '../data/products'
-import type { Perfume, ScentFamily, Gender } from '../types/perfume'
+import type { Perfume, ScentFamily } from '../types/perfume'
 
 // TODO: API Integration Ready
 // This store is currently using local data for stability during Sprint 6
@@ -11,17 +11,17 @@ import type { Perfume, ScentFamily, Gender } from '../types/perfume'
 // 2. Remove initializeProducts() method
 // 3. Call store.fetchProducts() on component mount instead of initializeProducts()
 
-type SortOption = 'price-asc' | 'price-desc' | 'best-seller' | 'new-arrival'
-
 const SCENT_ORDER: ScentFamily[] = ['Floral', 'Woody', 'Oriental', 'Fresh', 'Citrus', 'Gourmand']
 
 export const useProductStore = defineStore('product', () => {
   // State
-  const selectedBrands = ref<string[]>([])
-  const selectedScentFamilies = ref<ScentFamily[]>([])
-  const selectedGender = ref<Gender | null>(null)
-  const sortBy = ref<SortOption>('price-asc')
-  const allProducts = ref<Perfume[]>([]) // Start empty, will be populated on init
+  const allProducts = ref<Perfume[]>(localProducts) // Load synchronously
+  console.log('[STORE PRODUCTS]', allProducts.value.length)
+
+  /* 
+   * Previous async initialization removed to ensure immediate data availability.
+   * API simulation can be added back when backend is ready.
+   */
   const loading = ref(false)
   const error = ref<string | null>(null)
   const isInitialized = ref(false)
@@ -37,81 +37,10 @@ export const useProductStore = defineStore('product', () => {
     SCENT_ORDER.filter((family) => allProducts.value.some((p) => p.scentFamily === family)),
   )
 
-  // Computed: Get lowest price for a perfume
-  const getLowestPrice = (perfume: Perfume): number => {
-    const prices = perfume.sizes.map((s) => s.price)
-    return Math.min(...prices)
-  }
-
-  // Computed: Filtered products
-  const filteredProducts = computed(() => {
-    return allProducts.value.filter((perfume) => {
-      const brandMatch =
-        selectedBrands.value.length === 0 || selectedBrands.value.includes(perfume.brand)
-      const scentMatch =
-        selectedScentFamilies.value.length === 0 ||
-        selectedScentFamilies.value.includes(perfume.scentFamily)
-      const genderMatch = selectedGender.value === null || perfume.gender === selectedGender.value
-
-      return brandMatch && scentMatch && genderMatch
-    })
+  // Computed: Best sellers
+  const bestSellers = computed(() => {
+    return allProducts.value.filter((p) => p.isBestSeller)
   })
-
-  // Computed: Filtered and sorted products
-  const filteredAndSortedProducts = computed(() => {
-    const sorted = [...filteredProducts.value]
-
-    switch (sortBy.value) {
-      case 'price-asc':
-        sorted.sort((a, b) => getLowestPrice(a) - getLowestPrice(b))
-        break
-      case 'price-desc':
-        sorted.sort((a, b) => getLowestPrice(b) - getLowestPrice(a))
-        break
-      case 'best-seller':
-        sorted.sort((a, b) => (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0))
-        break
-      case 'new-arrival':
-        sorted.sort((a, b) => (b.isNewArrival ? 1 : 0) - (a.isNewArrival ? 1 : 0))
-        break
-    }
-
-    return sorted
-  })
-
-  // Actions
-  const toggleBrand = (brand: string) => {
-    const index = selectedBrands.value.indexOf(brand)
-    if (index > -1) {
-      selectedBrands.value.splice(index, 1)
-    } else {
-      selectedBrands.value.push(brand)
-    }
-  }
-
-  const toggleScentFamily = (family: ScentFamily) => {
-    const index = selectedScentFamilies.value.indexOf(family)
-    if (index > -1) {
-      selectedScentFamilies.value.splice(index, 1)
-    } else {
-      selectedScentFamilies.value.push(family)
-    }
-  }
-
-  const setGender = (gender: Gender | null) => {
-    selectedGender.value = gender
-  }
-
-  const setSortBy = (option: SortOption) => {
-    sortBy.value = option
-  }
-
-  const resetFilters = () => {
-    selectedBrands.value = []
-    selectedScentFamilies.value = []
-    selectedGender.value = null
-    sortBy.value = 'price-asc'
-  }
 
   /**
    * Initialize products from local data
@@ -121,30 +50,12 @@ export const useProductStore = defineStore('product', () => {
    * Implement: store.fetchProducts() instead
    */
   const initializeProducts = async () => {
-    // Skip if already initialized
-    if (isInitialized.value) {
-      return
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      // Simulate realistic network delay (300-600ms)
-      // This allows skeleton loaders to display briefly
-      await new Promise((resolve) => setTimeout(resolve, 350))
-
-      // Load from local hardcoded dataset
-      allProducts.value = localProducts
-      console.log(`[Store] Initialized ${localProducts.length} products from local data`)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      error.value = message
-      console.error(`[Store] Failed to initialize products: ${message}`)
-    } finally {
-      loading.value = false
-      isInitialized.value = true
-    }
+    // products already loaded synchronously
+    if (isInitialized.value) return 
+    
+    // Optional: Keep a small delay if you want to show skeleton for UI testing, 
+    // otherwise just set initialized
+    isInitialized.value = true
   }
 
   /**
@@ -181,10 +92,6 @@ export const useProductStore = defineStore('product', () => {
 
   return {
     // State
-    selectedBrands,
-    selectedScentFamilies,
-    selectedGender,
-    sortBy,
     allProducts,
     loading,
     error,
@@ -192,17 +99,12 @@ export const useProductStore = defineStore('product', () => {
     // Computed
     availableBrands,
     availableScentFamilies,
-    filteredAndSortedProducts,
+    bestSellers,
     // Access to all products (needed for wishlist)
     get products() {
       return allProducts.value
     },
     // Actions
-    toggleBrand,
-    toggleScentFamily,
-    setGender,
-    setSortBy,
-    resetFilters,
     initializeProducts,
     // fetchProducts, // TODO: Uncomment when API is ready
   }

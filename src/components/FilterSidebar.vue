@@ -6,11 +6,11 @@
     <fieldset class="filter-group">
       <legend class="filter-label">Brand</legend>
       <div class="options">
-        <label v-for="brand in store.availableBrands" :key="brand" class="checkbox">
+        <label v-for="brand in availableBrands" :key="brand" class="checkbox">
           <input
             type="checkbox"
-            :checked="store.selectedBrands.includes(brand)"
-            @change="store.toggleBrand(brand)"
+            :checked="selectedBrands.includes(brand)"
+            @change="toggleBrand(brand)"
           />
           <span>{{ brand }}</span>
         </label>
@@ -21,11 +21,11 @@
     <fieldset class="filter-group">
       <legend class="filter-label">Scent Family</legend>
       <div class="options">
-        <label v-for="family in store.availableScentFamilies" :key="family" class="checkbox">
+        <label v-for="family in availableScentFamilies" :key="family" class="checkbox">
           <input
             type="checkbox"
-            :checked="store.selectedScentFamilies.includes(family)"
-            @change="store.toggleScentFamily(family)"
+            :checked="selectedScentFamilies.includes(family)"
+            @change="toggleScentFamily(family)"
           />
           <span>{{ family }}</span>
         </label>
@@ -35,7 +35,7 @@
     <!-- Gender Filter -->
     <fieldset class="filter-group">
       <legend class="filter-label">Gender</legend>
-      <select :value="store.selectedGender || ''" @change="updateGender" class="select">
+      <select :value="selectedGender || ''" @change="updateGender" class="select">
         <option value="">All</option>
         <option value="Men">Men</option>
         <option value="Women">Women</option>
@@ -44,30 +44,67 @@
     </fieldset>
 
     <!-- Reset Button -->
-    <button @click="store.resetFilters" :disabled="!hasActiveFilters" class="reset-btn">
+    <button @click="handleReset" :disabled="!hasActiveFilters" class="reset-btn">
       Reset Filters
     </button>
   </aside>
 </template>
 
 <script setup lang="ts">
-import { useProductStore } from '@/stores/productStore'
-import type { Gender } from '@/types/perfume'
+import { useProductStore } from '../stores/productStore'
+import type { Gender, ScentFamily } from '../types/perfume'
 import { computed } from 'vue'
 
+// Props
+const props = defineProps<{
+  selectedBrands: string[]
+  selectedScentFamilies: ScentFamily[]
+  selectedGender: Gender | null
+}>()
+
+// Emits
+const emit = defineEmits<{
+  'update:brands': [value: string[]]
+  'update:scent-families': [value: ScentFamily[]]
+  'update:gender': [value: Gender | null]
+  reset: []
+}>()
+
 const store = useProductStore()
+
+// Available options from store
+const availableBrands = computed(() => store.availableBrands)
+const availableScentFamilies = computed(() => store.availableScentFamilies)
 
 const updateGender = (e: Event) => {
   const target = e.target as HTMLSelectElement
   const value = target.value as Gender | ''
-  store.setGender(value === '' ? null : value)
+  emit('update:gender', value === '' ? null : (value as Gender))
+}
+
+const toggleBrand = (brand: string) => {
+  const newBrands = props.selectedBrands.includes(brand)
+    ? props.selectedBrands.filter((b) => b !== brand)
+    : [...props.selectedBrands, brand]
+  emit('update:brands', newBrands)
+}
+
+const toggleScentFamily = (family: ScentFamily) => {
+  const newFamilies = props.selectedScentFamilies.includes(family)
+    ? props.selectedScentFamilies.filter((f) => f !== family)
+    : [...props.selectedScentFamilies, family]
+  emit('update:scent-families', newFamilies)
+}
+
+const handleReset = () => {
+  emit('reset')
 }
 
 const hasActiveFilters = computed(
   () =>
-    store.selectedBrands.length ||
-    store.selectedScentFamilies.length ||
-    store.selectedGender !== null,
+    props.selectedBrands.length ||
+    props.selectedScentFamilies.length ||
+    props.selectedGender !== null,
 )
 </script>
 
