@@ -17,10 +17,14 @@ import { useProductStore } from '../stores/productStore'
 const store = useProductStore()
 
 const items = computed(() => {
+  // Filter for best sellers
   const sellers = store.products.filter((p: any) => p.isBestSeller)
-  if (sellers.length > 0) return sellers.slice(0, 6)
-  // fallback: show first 6 products from raw data
-  return store.products.slice(0, 6)
+  
+  // Return up to 15 best sellers if available
+  if (sellers.length > 0) return sellers.slice(0, 15)
+  
+  // Fallback: show first 15 products from raw data if no best sellers defined
+  return store.products.slice(0, 15)
 })
 
 const track = ref<HTMLElement | null>(null)

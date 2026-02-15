@@ -1,6 +1,8 @@
 <template>
   <div class="layout">
+    <!-- ================= DESKTOP SIDEBAR ================= -->
     <FilterSidebar
+      class="desktop-only"
       :selected-brands="filters.brands"
       :selected-scent-families="filters.scentFamilies"
       :selected-gender="filters.gender"
@@ -9,39 +11,104 @@
       @update:gender="filters.gender = $event"
       @reset="resetFilters"
     />
+
+    <!-- ================= MAIN CONTENT ================= -->
     <main class="main-content">
+      <!-- Sticky Header -->
       <header class="header">
-        <h1 class="title">Catalogue</h1>
-        <SortDropdown :sort-by="filters.sortBy" @update:sort-by="filters.sortBy = $event" />
+        <div class="title-group">
+          <h1 class="title">Catalogue</h1>
+          <span class="count">
+            {{ filteredAndSortedProducts.length }} items
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <!-- Mobile Filter Button -->
+          <button class="mobile-filter-btn" @click="openFilters">
+            Filters
+          </button>
+
+          <SortDropdown
+            :sort-by="filters.sortBy"
+            @update:sort-by="filters.sortBy = $event"
+          />
+        </div>
       </header>
 
-      <!-- Loading state -->
-      <div v-if="store.loading" class="loading">
+      <!-- Loading State -->
+      <div v-if="store.loading" class="state">
         <p>Loading perfumes...</p>
       </div>
 
-      <!-- Error state -->
-      <div v-else-if="store.error" class="error">
-        <p>⚠️ Could not load perfumes from server</p>
-        <p class="error-message">{{ store.error }}</p>
-        <p class="fallback-notice">Using local data as fallback</p>
+      <!-- Error State -->
+      <div v-else-if="store.error" class="state error">
+        <p>⚠️ Could not load perfumes</p>
+        <small>{{ store.error }}</small>
       </div>
 
-      <!-- Empty state -->
-      <div v-else-if="filteredAndSortedProducts.length === 0" class="empty">
+      <!-- Empty State -->
+      <div
+        v-else-if="filteredAndSortedProducts.length === 0"
+        class="state empty"
+      >
         <p>No perfumes match your filters.</p>
+        <button class="reset-btn" @click="resetFilters">
+          Clear filters
+        </button>
       </div>
 
-      <!-- Products grid -->
+      <!-- Product Grid -->
       <div v-else class="grid">
-        <ProductCard v-for="p in filteredAndSortedProducts" :key="p.id" :perfume="p" />
+        <ProductCard
+          v-for="p in filteredAndSortedProducts"
+          :key="p.id"
+          :perfume="p"
+        />
       </div>
     </main>
+
+    <!-- ================= MOBILE FILTER SHEET ================= -->
+
+    <!-- Overlay -->
+    <div
+      class="mobile-filter-overlay"
+      :class="{ open: showFilters }"
+      @click="closeFilters"
+    />
+
+    <!-- Bottom Sheet / Side Panel -->
+    <div class="mobile-filter-sheet" :class="{ open: showFilters }">
+      <div class="sheet-header">
+        <h2 class="sheet-title">Filters</h2>
+        <button class="close-btn" @click="closeFilters" aria-label="Close filters">
+          ✕
+        </button>
+      </div>
+
+      <div class="sheet-body">
+        <FilterSidebar
+          :selected-brands="filters.brands"
+          :selected-scent-families="filters.scentFamilies"
+          :selected-gender="filters.gender"
+          @update:brands="filters.brands = $event"
+          @update:scent-families="filters.scentFamilies = $event"
+          @update:gender="filters.gender = $event"
+          @reset="resetFilters"
+        />
+      </div>
+
+      <div class="sheet-footer">
+        <button class="apply-btn" @click="closeFilters">
+          Show {{ filteredAndSortedProducts.length }} results
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
 import FilterSidebar from '../components/FilterSidebar.vue'
 import SortDropdown from '../components/SortDropdown.vue'
@@ -50,7 +117,20 @@ import type { Perfume, Gender, ScentFamily } from '../types/perfume'
 
 const store = useProductStore()
 
-// Local filter state
+/* ================= MOBILE FILTER STATE ================= */
+const showFilters = ref(false)
+
+const openFilters = () => {
+  showFilters.value = true
+  document.documentElement.style.overflow = 'hidden'
+}
+
+const closeFilters = () => {
+  showFilters.value = false
+  document.documentElement.style.overflow = ''
+}
+
+/* ================= FILTER STATE ================= */
 const filters = ref<{
   brands: string[]
   scentFamilies: ScentFamily[]
@@ -63,51 +143,66 @@ const filters = ref<{
   sortBy: 'price-asc',
 })
 
-// Helper: Get lowest price for a perfume
+/* ================= HELPERS ================= */
 const getLowestPrice = (perfume: Perfume): number => {
-  const prices = perfume.sizes.map((s) => s.price)
-  return Math.min(...prices)
+  if (!perfume.sizes?.length) return 0
+  return Math.min(...perfume.sizes.map((s) => s.price))
 }
 
-// Computed: Filtered and sorted products
+/* ================= FILTER + SORT ================= */
 const filteredAndSortedProducts = computed(() => {
+  if (!store.products.length) return []
+
   let result = [...store.products]
 
-  // Apply brand filter
   if (filters.value.brands.length > 0) {
-    result = result.filter((p) => filters.value.brands.includes(p.brand))
+    result = result.filter((p) =>
+      filters.value.brands.includes(p.brand),
+    )
   }
 
-  // Apply scent family filter
   if (filters.value.scentFamilies.length > 0) {
-    result = result.filter((p) => filters.value.scentFamilies.includes(p.scentFamily))
+    result = result.filter((p) =>
+      filters.value.scentFamilies.includes(p.scentFamily),
+    )
   }
 
-  // Apply gender filter
   if (filters.value.gender) {
-    result = result.filter((p) => p.gender === filters.value.gender)
+    result = result.filter(
+      (p) => p.gender === filters.value.gender,
+    )
   }
 
-  // Apply sorting
   switch (filters.value.sortBy) {
     case 'price-asc':
-      result.sort((a, b) => getLowestPrice(a) - getLowestPrice(b))
+      result.sort(
+        (a, b) => getLowestPrice(a) - getLowestPrice(b),
+      )
       break
     case 'price-desc':
-      result.sort((a, b) => getLowestPrice(b) - getLowestPrice(a))
+      result.sort(
+        (a, b) => getLowestPrice(b) - getLowestPrice(a),
+      )
       break
     case 'best-seller':
-      result.sort((a, b) => (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0))
+      result.sort(
+        (a, b) =>
+          Number(b.isBestSeller) - Number(a.isBestSeller),
+      )
       break
     case 'new-arrival':
-      // Assuming newer products have higher IDs
-      result.sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }))
+      result.sort((a, b) =>
+        b.id.localeCompare(a.id, undefined, {
+          numeric: true,
+        }),
+      )
       break
   }
 
   return result
 })
 
+/* ================= RESET ================= */
 const resetFilters = () => {
   filters.value = {
     brands: [],
@@ -117,8 +212,7 @@ const resetFilters = () => {
   }
 }
 
-// Initialize products from local data with simulated loading
-// TODO: Replace with store.fetchProducts() when API is ready
+/* ================= INIT ================= */
 onMounted(() => {
   store.initializeProducts()
 })
@@ -127,69 +221,292 @@ onMounted(() => {
 <style scoped>
 .layout {
   display: flex;
-  background: #ffffff;
   min-height: 100vh;
-  color: #333333;
+  background: #ffffff;
+  /* Ensure container doesn't overflow */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-.main-content {
-  flex: 1;
-  padding: 28px;
-}
+/* ================= HEADER ================= */
 
 .header {
+  position: sticky;
+  top: 56px; /* Matches mobile navbar height */
+  z-index: 30; /* Below navbar (50) and mobile menu (40) */
+  background: #ffffff;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.title-group {
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
+  font-size: 20px;
   margin: 0;
-  font-size: 22px;
+  font-weight: 600;
 }
+
+.count {
+  font-size: 13px;
+  color: #888;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Tablet & Desktop Header */
+@media (min-width: 768px) {
+  .header {
+    top: 64px; /* Matches desktop navbar height */
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+  }
+
+  .header-actions {
+    flex-direction: row;
+    width: auto;
+    align-items: center;
+  }
+}
+
+/* ================= MAIN ================= */
+
+.main-content {
+  flex: 1;
+  width: 100%;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    padding: 24px;
+  }
+}
+
+/* ================= GRID ================= */
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Tablet (3 cols) */
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+/* Desktop (4 cols) */
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+
+/* ================= STATES ================= */
+
+.state {
+  text-align: center;
+  padding: 80px 20px;
+  color: #666;
 }
 
 .empty {
-  padding: 60px 28px;
-  text-align: center;
-  color: #999999;
-  font-size: 16px;
-}
-
-.loading {
-  padding: 60px 28px;
-  text-align: center;
-  color: #666666;
-  font-size: 16px;
+  color: #888;
 }
 
 .error {
-  padding: 40px 28px;
-  background: #fff3cd;
-  border: 1px solid #ffc107;
-  border-radius: 4px;
-  margin-bottom: 28px;
+  color: #b00020;
 }
 
-.error p {
-  margin: 8px 0;
-  color: #856404;
+.reset-btn {
+  margin-top: 14px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #f2f2f2;
+  border: none;
+  cursor: pointer;
 }
 
-.error-message {
+/* ================= MOBILE FILTER BUTTON ================= */
+
+.mobile-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #111;
+  color: #fff;
   font-size: 14px;
-  color: #999999;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.fallback-notice {
-  font-size: 13px;
-  margin-top: 8px;
-  color: #666666;
+.mobile-filter-btn:hover {
+  background: #333;
+}
+
+@media (min-width: 1024px) {
+  .mobile-filter-btn {
+    display: none;
+  }
+}
+
+/* ================= SIDEBARS (Desktop & Tablet Panel) ================= */
+
+/* Desktop Permanent Sidebar */
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktop-only {
+    display: block;
+    width: 280px;
+    flex-shrink: 0;
+    border-right: 1px solid #f0f0f0;
+    height: calc(100vh - 64px);
+    position: sticky;
+    top: 64px;
+    overflow-y: auto;
+  }
+}
+
+/* ================= FILTER DRAWER (Mobile & Tablet) ================= */
+
+.mobile-filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-filter-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-filter-sheet {
+  position: fixed;
+  background: #fff;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}
+
+/* Mobile: Bottom Sheet */
+@media (max-width: 767px) {
+  .mobile-filter-sheet {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 85vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+  }
+
+  .mobile-filter-sheet.open {
+    transform: translateY(0);
+  }
+}
+
+/* Tablet: Side Panel */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mobile-filter-sheet {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 320px;
+    height: 100vh;
+    border-radius: 0;
+    transform: translateX(-100%);
+  }
+
+  .mobile-filter-sheet.open {
+    transform: translateX(0);
+  }
+}
+
+/* Desktop: Hidden (uses permanent sidebar) */
+@media (min-width: 1024px) {
+  .mobile-filter-sheet,
+  .mobile-filter-overlay {
+    display: none !important;
+  }
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.sheet-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.sheet-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+
+.apply-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
 }
 </style>

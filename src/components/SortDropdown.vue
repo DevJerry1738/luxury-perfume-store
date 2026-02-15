@@ -38,6 +38,7 @@ const updateSort = (e: Event) => {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%; /* Allow wrapper to take full width */
 }
 
 .sort-label {
@@ -48,6 +49,7 @@ const updateSort = (e: Event) => {
 }
 
 .sort-select {
+  flex: 1; /* Allow select to grow */
   padding: 8px 12px;
   background: #ffffff;
   border: 1px solid #e0e0e0;
@@ -56,6 +58,7 @@ const updateSort = (e: Event) => {
   font-size: 13px;
   cursor: pointer;
   min-width: 150px;
+  width: 100%;
 }
 
 .sort-select:focus {

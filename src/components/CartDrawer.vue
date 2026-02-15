@@ -36,9 +36,9 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCartStore } from '@/stores/cartStore'
+import { useCartStore } from '../stores/cartStore'
 import CartItemRow from './CartItemRow.vue'
-import { formatPrice } from '@/utils/formatPrice'
+import { formatPrice } from '../utils/formatPrice'
 
 const store = useCartStore()
 const router = useRouter()
@@ -47,13 +47,12 @@ const router = useRouter()
 watch(
   () => store.isOpen,
   (isOpen) => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    document.documentElement.style.overflow = isOpen ? 'hidden' : ''
+    document.body.style.overflow = isOpen ? 'hidden' : ''
+    document.body.style.touchAction = isOpen ? 'none' : ''
   },
 )
+
 
 // Close cart drawer when route changes
 router.beforeEach(() => {
@@ -63,80 +62,165 @@ router.beforeEach(() => {
 </script>
 
 <style scoped>
+/* ================= OVERLAY ================= */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(51, 51, 51, 0.4);
+  background: rgba(20, 20, 20, 0.45);
+  backdrop-filter: blur(2px);
   z-index: 40;
+  touch-action: none;
 }
 
+/* ================= BASE DRAWER ================= */
 .drawer {
   position: fixed;
-  top: 0;
-  right: -420px;
-  width: 420px;
-  height: 100vh;
   background: #ffffff;
   color: #333333;
   z-index: 50;
   display: flex;
   flex-direction: column;
-  transition: right 0.28s ease;
   box-shadow: -8px 0 24px rgba(51, 51, 51, 0.12);
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.drawer.open {
-  right: 0;
+/* ================= DESKTOP (SIDEBAR) ================= */
+@media (min-width: 769px) {
+  .drawer {
+    top: 0;
+    right: 0;
+    width: 420px;
+    height: 100vh;
+    transform: translateX(100%);
+  }
+
+  .drawer.open {
+    transform: translateX(0);
+  }
 }
 
+/* ================= MOBILE (BOTTOM SHEET) ================= */
+@media (max-width: 768px) {
+  .drawer {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 92vh;
+    border-radius: 18px 18px 0 0;
+    transform: translateY(100%);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.18);
+  }
+
+  .drawer.open {
+    transform: translateY(0);
+  }
+}
+
+/* ================= HEADER ================= */
 .drawer-header {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 18px 16px;
+  border-bottom: 1px solid #ececec;
 }
+
+/* mobile grab handle */
+@media (max-width: 768px) {
+  .drawer-header::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 4px;
+    border-radius: 999px;
+    background: #d9d9d9;
+  }
+}
+
 .close {
-  background: transparent;
+  background: #f5f5f5;
   border: none;
-  color: #333333;
+  color: #333;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
   font-size: 18px;
   cursor: pointer;
 }
+
+/* ================= BODY ================= */
 .drawer-body {
-  padding: 16px;
+  padding: 14px 16px;
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 .empty {
   color: #999999;
-  padding: 24px;
+  padding: 48px 12px;
   text-align: center;
+  font-size: 15px;
 }
+
+/* ================= FOOTER ================= */
 .drawer-footer {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
   padding: 16px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #ececec;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
 }
+
 .subtotal {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 16px;
-  margin-bottom: 16px;
+  font-size: 17px;
+  margin-bottom: 14px;
 }
+
+.subtotal strong {
+  font-size: 18px;
+}
+
+/* ================= CHECKOUT BUTTON ================= */
 .checkout-btn {
   display: block;
   width: 100%;
-  padding: 12px;
+  padding: 16px;
   background: #d4af37;
   color: #ffffff;
   text-align: center;
-  border-radius: 4px;
+  border-radius: 12px;
   font-weight: 600;
+  font-size: 16px;
   text-decoration: none;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+  touch-action: manipulation;
 }
+
 .checkout-btn:hover {
   background: #e6c200;
+  transform: translateY(-1px);
 }
+
+.checkout-btn:active {
+  transform: scale(0.98);
+}
+
 </style>

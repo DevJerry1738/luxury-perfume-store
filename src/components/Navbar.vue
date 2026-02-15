@@ -48,32 +48,39 @@ const wishlistStore = useWishlistStore()
 
   padding: 0 24px;
 
-  background: white;
-  opacity: 0.95;
-  border-bottom: 1px solid var(--border-subtle);
+  /* Glassmorphism */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .brand {
   text-decoration: none;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
 }
 
 .brand-text {
-  font-size: 20px; /* Slightly larger for a more premium feel */
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.6px; /* Increased spacing for elegance */
-  text-transform: uppercase; /* All caps for modern minimalism */
-  font-family: 'Futura', 'Roboto Condensed', sans-serif; /* Align with recommended typography */
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Futura', 'Roboto Condensed', sans-serif;
+  color: var(--text-primary);
 }
 
 .brand-subtext {
-  font-weight: 400; /* Lighter weight for 'Scents' to create subtle contrast */
+  font-weight: 400;
+  color: var(--text-secondary);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .icon-btn {
@@ -86,34 +93,33 @@ const wishlistStore = useWishlistStore()
   justify-content: center;
 
   background: transparent;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid transparent; /* Cleaner look by default */
   border-radius: 999px;
 
   color: var(--text-primary);
   cursor: pointer;
 
-  transition:
-    background 0.2s ease,
-    transform 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .icon-btn:hover {
-  background: var(--bg-primary);
+  background: rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
 }
 
 .icon-btn svg {
   width: 20px;
   height: 20px;
+  stroke-width: 1.5px; /* Thinner stroke for elegance */
 }
 
 .badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: -2px;
+  right: -2px;
 
-  min-width: 18px;
-  height: 18px;
+  min-width: 16px;
+  height: 16px;
 
   padding: 0 4px;
 
@@ -121,11 +127,38 @@ const wishlistStore = useWishlistStore()
   align-items: center;
   justify-content: center;
 
-  background: var(--accent);
+  background: var(--gold-accent, #d4af37);
   color: #fff;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   border-radius: 999px;
+  border: 2px solid #fff; /* White border to separate from icon */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .navbar {
+    height: 56px;
+    padding: 0 16px;
+  }
+
+  .brand-text {
+    font-size: 18px;
+  }
+
+  .actions {
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .icon-btn svg {
+    width: 18px;
+    height: 18px;
+  }
 }
 </style>

@@ -112,10 +112,12 @@ const hasActiveFilters = computed(
 .filter-sidebar {
   padding: 20px;
   background: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
-  max-width: 220px;
-  min-height: 100vh;
+  /* Removed border-right as it's handled by container or not needed in drawer */
+  /* border-right: 1px solid #e0e0e0; */ 
+  width: 100%;
+  height: 100%;
   color: #333333;
+  overflow-y: auto; /* Ensure scrolling within if needed */
 }
 
 .sidebar-title {
