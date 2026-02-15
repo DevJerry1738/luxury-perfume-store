@@ -2,21 +2,11 @@
   <div class="home-page">
     <HeroSection />
 
-    
+
 
     <ScentFamilySelector />
 
     <BestSellersCarousel />
-
-    <!-- <section class="about container">
-      <div class="about-inner">
-        <h2 class="about-title">A Quiet Confidence</h2>
-        <p class="about-text">
-          We craft distinctive fragrances that linger like a signature. Each composition is built
-          with care, sourced ingredients, and an editorial eye for balance.
-        </p>
-      </div>
-    </section> -->
 
     <section id="catalog" class="catalog container">
       <header class="catalog-header">
@@ -24,16 +14,13 @@
         <p class="muted">Curated selection of our current collection.</p>
       </header>
 
-      <ProductFilters
-        :filtered-count="filteredProducts.length"
-        :total-count="store.products.length"
-        @update:filters="handleFilterUpdate"
-      />
+      <ProductFilters :filtered-count="filteredProducts.length" :total-count="store.products.length"
+        @update:filters="handleFilterUpdate" />
 
       <transition name="fade" mode="out-in">
         <SkeletonGrid v-if="isLoading" :count="8" key="skeleton" />
         <div v-else key="products" class="grid">
-          <ProductCard v-for="p in filteredProducts" :key="p.id" :perfume="p" />
+          <ProductCard v-for="p in filteredProducts" :key="p.id" :perfume="p" class="card-item" />
         </div>
       </transition>
     </section>
@@ -112,7 +99,7 @@ const filteredProducts = computed(() => {
     result = result.filter((p) => {
       // Guard against products with no sizes
       if (!p.sizes?.length) return true
-      
+
       const lowestPrice = getLowestPrice(p)
       switch (filters.value.priceRange) {
         case 'under-50k':
@@ -161,7 +148,7 @@ const handleFilterUpdate = (newFilters: {
 onMounted(() => {
   // Store is now synchronous, but we keep this call for any future logic
   store.initializeProducts()
-  
+
   // minimal skeleton flash to show loading UI
   setTimeout(() => {
     isLoading.value = false
@@ -175,19 +162,23 @@ onMounted(() => {
   margin: 0 auto;
   padding: 0 20px;
 }
+
 .about {
   padding: 48px 0;
 }
+
 .about-inner {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
   text-align: center;
 }
+
 .about-title {
   font-size: clamp(20px, 3.2vw, 28px);
   margin: 0 0 8px;
 }
+
 .about-text {
   color: #666666;
   max-width: 900px;
@@ -197,14 +188,17 @@ onMounted(() => {
 .catalog {
   padding: 40px 0 80px;
 }
+
 .catalog-header {
   text-align: center;
   margin-bottom: 24px;
 }
+
 .catalog-header h2 {
   margin: 0;
   font-size: 20px;
 }
+
 .muted {
   color: #999999;
   margin-top: 6px;
@@ -214,12 +208,28 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 18px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.card-item {
+  flex: 0 0 220px;
+  scroll-snap-align: start;
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.card-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(51, 51, 51, 0.1);
 }
 
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 240ms ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
@@ -229,6 +239,7 @@ onMounted(() => {
   .grid {
     gap: 12px;
   }
+
   .about {
     padding: 28px 0;
   }

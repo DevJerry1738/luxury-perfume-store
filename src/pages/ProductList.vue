@@ -1,16 +1,10 @@
 <template>
   <div class="layout">
     <!-- ================= DESKTOP SIDEBAR ================= -->
-    <FilterSidebar
-      class="desktop-only"
-      :selected-brands="filters.brands"
-      :selected-scent-families="filters.scentFamilies"
-      :selected-gender="filters.gender"
-      @update:brands="filters.brands = $event"
-      @update:scent-families="filters.scentFamilies = $event"
-      @update:gender="filters.gender = $event"
-      @reset="resetFilters"
-    />
+    <FilterSidebar class="desktop-only" :selected-brands="filters.brands"
+      :selected-scent-families="filters.scentFamilies" :selected-gender="filters.gender"
+      @update:brands="filters.brands = $event" @update:scent-families="filters.scentFamilies = $event"
+      @update:gender="filters.gender = $event" @reset="resetFilters" />
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="main-content">
@@ -29,10 +23,7 @@
             Filters
           </button>
 
-          <SortDropdown
-            :sort-by="filters.sortBy"
-            @update:sort-by="filters.sortBy = $event"
-          />
+          <SortDropdown :sort-by="filters.sortBy" @update:sort-by="filters.sortBy = $event" />
         </div>
       </header>
 
@@ -48,10 +39,7 @@
       </div>
 
       <!-- Empty State -->
-      <div
-        v-else-if="filteredAndSortedProducts.length === 0"
-        class="state empty"
-      >
+      <div v-else-if="filteredAndSortedProducts.length === 0" class="state empty">
         <p>No perfumes match your filters.</p>
         <button class="reset-btn" @click="resetFilters">
           Clear filters
@@ -60,22 +48,14 @@
 
       <!-- Product Grid -->
       <div v-else class="grid">
-        <ProductCard
-          v-for="p in filteredAndSortedProducts"
-          :key="p.id"
-          :perfume="p"
-        />
+        <ProductCard v-for="p in filteredAndSortedProducts" :key="p.id" :perfume="p" />
       </div>
     </main>
 
     <!-- ================= MOBILE FILTER SHEET ================= -->
 
     <!-- Overlay -->
-    <div
-      class="mobile-filter-overlay"
-      :class="{ open: showFilters }"
-      @click="closeFilters"
-    />
+    <div class="mobile-filter-overlay" :class="{ open: showFilters }" @click="closeFilters" />
 
     <!-- Bottom Sheet / Side Panel -->
     <div class="mobile-filter-sheet" :class="{ open: showFilters }">
@@ -87,15 +67,10 @@
       </div>
 
       <div class="sheet-body">
-        <FilterSidebar
-          :selected-brands="filters.brands"
-          :selected-scent-families="filters.scentFamilies"
-          :selected-gender="filters.gender"
-          @update:brands="filters.brands = $event"
-          @update:scent-families="filters.scentFamilies = $event"
-          @update:gender="filters.gender = $event"
-          @reset="resetFilters"
-        />
+        <FilterSidebar :selected-brands="filters.brands" :selected-scent-families="filters.scentFamilies"
+          :selected-gender="filters.gender" @update:brands="filters.brands = $event"
+          @update:scent-families="filters.scentFamilies = $event" @update:gender="filters.gender = $event"
+          @reset="resetFilters" />
       </div>
 
       <div class="sheet-footer">
@@ -109,6 +84,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import ProductCard from '../components/ProductCard.vue'
 import FilterSidebar from '../components/FilterSidebar.vue'
 import SortDropdown from '../components/SortDropdown.vue'
@@ -116,6 +92,7 @@ import { useProductStore } from '../stores/productStore'
 import type { Perfume, Gender, ScentFamily } from '../types/perfume'
 
 const store = useProductStore()
+const route = useRoute()
 
 /* ================= MOBILE FILTER STATE ================= */
 const showFilters = ref(false)
@@ -213,8 +190,14 @@ const resetFilters = () => {
 }
 
 /* ================= INIT ================= */
-onMounted(() => {
-  store.initializeProducts()
+onMounted(async () => {
+  await store.initializeProducts()
+
+  // Initialize from query params
+  const familyParam = route.query.family as string
+  if (familyParam && store.availableScentFamilies.includes(familyParam as ScentFamily)) {
+    filters.value.scentFamilies = [familyParam as ScentFamily]
+  }
 })
 </script>
 
@@ -232,14 +215,17 @@ onMounted(() => {
 
 .header {
   position: sticky;
-  top: 56px; /* Matches mobile navbar height */
-  z-index: 30; /* Below navbar (50) and mobile menu (40) */
+  /* top: 56px; */
+  /* Matches mobile navbar height */
+  z-index: 30;
+  /* Below navbar (50) and mobile menu (40) */
   background: #ffffff;
-  padding: 16px;
+  /* padding: 16px; */
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  margin-bottom: 2rem;
 }
 
 .title-group {
@@ -268,11 +254,12 @@ onMounted(() => {
 /* Tablet & Desktop Header */
 @media (min-width: 768px) {
   .header {
-    top: 64px; /* Matches desktop navbar height */
+    /* top: 64px; */
+    /* Matches desktop navbar height */
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
+    /* padding: 20px 24px; */
   }
 
   .header-actions {
@@ -388,7 +375,7 @@ onMounted(() => {
     border-right: 1px solid #f0f0f0;
     height: calc(100vh - 64px);
     position: sticky;
-    top: 64px;
+    /* top: 64px; */
     overflow-y: auto;
   }
 }
@@ -418,7 +405,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Mobile: Bottom Sheet */
@@ -456,6 +443,7 @@ onMounted(() => {
 
 /* Desktop: Hidden (uses permanent sidebar) */
 @media (min-width: 1024px) {
+
   .mobile-filter-sheet,
   .mobile-filter-overlay {
     display: none !important;

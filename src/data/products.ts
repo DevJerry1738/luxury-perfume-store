@@ -1,11 +1,11 @@
 import type { Perfume } from '../types/perfume'
-import p001 from '../assets/images/p001.jpg'
-import p002 from '../assets/images/p002.jpg'
-import p003 from '../assets/images/p003.jpg'
-import p004 from '../assets/images/p004.jpg'
-import p005 from '../assets/images/p005.jpg'
-import p006 from '../assets/images/p006.jpg'
-import p007 from '../assets/images/p007.jpg'
+import p001 from '../assets/images/p001.webp'
+import p002 from '../assets/images/p002.webp'
+import p003 from '../assets/images/p003.webp'
+import p004 from '../assets/images/p004.webp'
+import p005 from '../assets/images/p005.webp'
+import p006 from '../assets/images/p006.webp'
+import p007 from '../assets/images/p007.webp'
 
 export const localProducts: Perfume[] = [
   {

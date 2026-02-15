@@ -171,7 +171,7 @@ import { RouterLink } from 'vue-router'
 }
 
 .promo-best {
-  background-image: url('@/assets/images/bestseller.jpg');
+  background-image: url('@/assets/images/bestseller.webp');
 }
 
 /* ===== MOBILE ===== */
@@ -196,6 +196,7 @@ import { RouterLink } from 'vue-router'
     opacity: 0;
     transform: translateY(24px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

@@ -2,13 +2,8 @@
   <div class="size-selector">
     <h3 class="label">Size</h3>
     <div class="sizes">
-      <button
-        v-for="size in sizes"
-        :key="size.size"
-        :disabled="isOutOfStock"
-        :class="['size-btn', { active: modelValue?.size === size.size }]"
-        @click="handleSelectSize(size)"
-      >
+      <button v-for="size in sizes" :key="size.size" :disabled="isOutOfStock"
+        :class="['size-btn', { active: modelValue?.size === size.size }]" @click="handleSelectSize(size)">
         {{ size.size }}ml
       </button>
     </div>
@@ -17,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PerfumeSize } from '@/types/perfume'
+import type { PerfumeSize } from '../types/perfume'
 
 interface Props {
   sizes: PerfumeSize[]
@@ -75,17 +70,36 @@ const formatPrice = (price: number): string =>
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  /* Remove native highlight */
 }
 
-.size-btn:hover:not(:disabled) {
-  border-color: #d4af37;
-  background: #f5f5f5;
+/* Only apply hover on devices that support it */
+@media (hover: hover) {
+  .size-btn:hover:not(:disabled) {
+    border-color: #d4af37;
+    background: #f5f5f5;
+  }
 }
 
+/* Active State (Selected) - defined after hover/default */
 .size-btn.active {
   background: #d4af37;
   border-color: #d4af37;
   color: #ffffff;
+}
+
+/* Press state for immediate feedback */
+.size-btn:active:not(:disabled) {
+  transform: scale(0.96);
+  background: #f0f0f0;
+}
+
+/* Ensure active+press still looks selected */
+.size-btn.active:active:not(:disabled) {
+  background: #c49f30;
+  /* Darker gold */
+  border-color: #c49f30;
 }
 
 .size-btn:disabled {

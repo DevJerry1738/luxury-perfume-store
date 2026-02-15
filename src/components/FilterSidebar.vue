@@ -1,17 +1,12 @@
 <template>
   <aside class="filter-sidebar">
-    <h2 class="sidebar-title">Filters</h2>
 
     <!-- Brand Filter -->
     <fieldset class="filter-group">
       <legend class="filter-label">Brand</legend>
       <div class="options">
         <label v-for="brand in availableBrands" :key="brand" class="checkbox">
-          <input
-            type="checkbox"
-            :checked="selectedBrands.includes(brand)"
-            @change="toggleBrand(brand)"
-          />
+          <input type="checkbox" :checked="selectedBrands.includes(brand)" @change="toggleBrand(brand)" />
           <span>{{ brand }}</span>
         </label>
       </div>
@@ -22,11 +17,8 @@
       <legend class="filter-label">Scent Family</legend>
       <div class="options">
         <label v-for="family in availableScentFamilies" :key="family" class="checkbox">
-          <input
-            type="checkbox"
-            :checked="selectedScentFamilies.includes(family)"
-            @change="toggleScentFamily(family)"
-          />
+          <input type="checkbox" :checked="selectedScentFamilies.includes(family)"
+            @change="toggleScentFamily(family)" />
           <span>{{ family }}</span>
         </label>
       </div>
@@ -113,11 +105,12 @@ const hasActiveFilters = computed(
   padding: 20px;
   background: #f5f5f5;
   /* Removed border-right as it's handled by container or not needed in drawer */
-  /* border-right: 1px solid #e0e0e0; */ 
+  /* border-right: 1px solid #e0e0e0; */
   width: 100%;
   height: 100%;
   color: #333333;
-  overflow-y: auto; /* Ensure scrolling within if needed */
+  overflow-y: auto;
+  /* Ensure scrolling within if needed */
 }
 
 .sidebar-title {
@@ -162,7 +155,7 @@ const hasActiveFilters = computed(
   cursor: pointer;
 }
 
-.checkbox input[type='checkbox']:checked + span {
+.checkbox input[type='checkbox']:checked+span {
   color: #d4af37;
   font-weight: 500;
 }
