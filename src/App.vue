@@ -6,16 +6,18 @@
     </main>
 
     <CartDrawer />
+    <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
 import { watch } from 'vue'
 import { useRoute } from 'vue-router'
-import CartDrawer from '@/components/CartDrawer.vue'
-import { useCartStore } from '@/stores/cartStore'
-import { useWishlistStore } from '@/stores/wishlistStore'
+import CartDrawer from './components/CartDrawer.vue'
+import { useCartStore } from './stores/cartStore'
+import { useWishlistStore } from './stores/wishlistStore'
 import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
 
 const route = useRoute()
 const cartStore = useCartStore()
@@ -53,17 +55,23 @@ watch(
   color: #333333;
   border-bottom: 1px solid #e0e0e0;
 }
+
 .brand {
   font-weight: 700;
 }
+
 .app-main {
   min-height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
 }
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
+
 .wishlist-link {
   position: relative;
   display: flex;
@@ -77,12 +85,15 @@ watch(
   text-decoration: none;
   transition: background 0.2s ease;
 }
+
 .wishlist-link:hover {
   background: #e8e8e8;
 }
+
 .heart-icon {
   font-size: 16px;
 }
+
 .badge {
   position: absolute;
   top: -8px;
